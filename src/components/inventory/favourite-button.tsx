@@ -2,9 +2,15 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { HeartIcon } from "lucide-react";
 
-interface ClassifiedCardProps {}
+type FavouriteButtonProps = {
+    setIsFavourite: (isFavourite: boolean) => void;
+    isFavourite: boolean;
+    id: number;
+};
 
-export const FavouriteButton = (props: ClassifiedCardProps) => {
+export const FavouriteButton = (props: FavouriteButtonProps) => {
+    const { setIsFavourite, isFavourite, id } = props;
+
     return (
         <Button
             variant="ghost"

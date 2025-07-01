@@ -67,9 +67,9 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
     );
     const [isVisible, setIsVisible] = useState(true);
 
-    // useEffect(() => {
-    // 	if (!isFavourite && pathname === routes.favourites) setIsVisible(false);
-    // }, [isFavourite, pathname]);
+    useEffect(() => {
+        if (!isFavourite && pathname === routes.favourites) setIsVisible(false);
+    }, [isFavourite, pathname]);
 
     return (
         <AnimatePresence>
@@ -92,12 +92,11 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
                                 quality={25}
                             />
                         </Link>
-                        {/* <FavouriteButton
-							setIsFavourite={setIsFavourite}
-							isFavourite={isFavourite}
-							id={classified.id}
-						/> */}
-                        <FavouriteButton />
+                        <FavouriteButton
+                            setIsFavourite={setIsFavourite}
+                            isFavourite={isFavourite}
+                            id={classified.id}
+                        />
                         <div className="absolute top-2.5 right-3.5 bg-primary text-slate-50 font-bold px-2 py-1 rounded">
                             <p className="text-xs lg:text-base xl:text-lg font-semibold">
                                 {formatPrice({
