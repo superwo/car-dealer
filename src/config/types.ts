@@ -1,5 +1,6 @@
 // import type { UpdateClassifiedType } from "@/app/schemas/classified.schema";
 import type { Prisma } from "@prisma/client";
+import { ChangeEvent } from "react";
 // import type { ChangeEvent } from "react";
 
 export interface MultiStepFormComponentProps extends AwaitedPageProps {
@@ -45,4 +46,28 @@ export enum MultiStepFormEnum {
 
 export interface Favourites {
     ids: number[];
+}
+
+export interface TaxonomyFiltersProps extends AwaitedPageProps {
+    handleChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+}
+
+export type FilterOptions<LType, VType> = Array<{
+    label: LType;
+    value: VType;
+}>;
+
+export interface SidebarProps extends AwaitedPageProps {
+    minMaxValues: Prisma.GetClassifiedAggregateType<{
+        _min: {
+            year: true;
+            price: true;
+            odoReading: true;
+        };
+        _max: {
+            year: true;
+            odoReading: true;
+            price: true;
+        };
+    }>;
 }
