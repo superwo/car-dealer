@@ -9,6 +9,7 @@ import { routes } from "@/config/routes";
 import { CLASSIFIEDS_PER_PAGE } from "@/config/constants";
 import { PageSchema } from "@/app/schemas/page.schema";
 import { Sidebar } from "@/components/inventory/sidebar";
+import { ClassifiedStatus } from "@prisma/client";
 
 const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
     const validPage = PageSchema.parse(searchParams?.page);
@@ -20,8 +21,7 @@ const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
     const offset = (page - 1) * CLASSIFIEDS_PER_PAGE;
 
     return prisma.classified.findMany({
-        // where: buildClassifiedFilterQuery(searchParams),
-        where: {},
+        where: buildClassifiedFilterQuery(searchParams),
         include: { images: { take: 1 } },
         skip: offset,
         take: CLASSIFIEDS_PER_PAGE,
@@ -30,22 +30,33 @@ const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
 
 export default async function InventoryPage(props: PageProps) {
     const searchParams = await props.searchParams;
-    const classifieds = await getInventory(searchParams);
+    const classifieds = getInventory(searchParams);
     const count = await prisma.classified.count({
-        where: {},
-        // where: buildClassifiedFilterQuery(searchParams),
+        where: buildClassifiedFilterQuery(searchParams),
     });
 
-    // const count = await prisma.classified.count();
+    const minMaxResult = await prisma.classified.aggregate({
+        where: { status: ClassifiedStatus.LIVE },
+        _min: {
+            year: true,
+            price: true,
+            odoReading: true,
+        },
+        _max: {
+            price: true,
+            year: true,
+            odoReading: true,
+        },
+    });
+
     const sourceId = await getSourceId();
     const favourites = await redis.get<Favourites>(sourceId ?? "");
-
     const totalPages = Math.ceil(count / CLASSIFIEDS_PER_PAGE);
 
     return (
         <div className="flex">
-            {/* <Sidebar minMaxValues={minMaxResult} searchParams={searchParams} /> */}
-            <Sidebar minMaxValues={null} searchParams={searchParams} />
+            <Sidebar minMaxValues={minMaxResult} searchParams={searchParams} />
+            {/* <Sidebar minMaxValues={null} searchParams={searchParams} /> */}
 
             <div className="flex-1 p-4 bg-white">
                 <div className="flex space-y-2 items-center justify-between pb-4 -mt-1">
@@ -78,6 +89,7 @@ export default async function InventoryPage(props: PageProps) {
                     classifieds={classifieds}
                     favourites={favourites ? favourites.ids : []}
                 />
+
                 {/* </Suspense> */}
 
                 <CustomPagination

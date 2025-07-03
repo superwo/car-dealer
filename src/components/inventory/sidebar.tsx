@@ -10,10 +10,12 @@ import { routes } from "@/config/routes";
 import { cn } from "@/lib/utils";
 import { SearchInput } from "../shared/search-input";
 import { TaxonomyFilters } from "./taxonomy-filters";
+import { RangeFilter } from "./range-filters";
 
 export const Sidebar = ({ minMaxValues, searchParams }: SidebarProps) => {
     const router = useRouter();
     const [filterCount, setFilterCount] = useState(0);
+    const { _min, _max } = minMaxValues;
 
     const [queryStates, setQueryStates] = useQueryStates(
         {
@@ -106,16 +108,16 @@ export const Sidebar = ({ minMaxValues, searchParams }: SidebarProps) => {
                     handleChange={handleChange}
                 />
 
+                <RangeFilter
+                    label="Year"
+                    minName="minYear"
+                    maxName="maxYear"
+                    defaultMin={_min.year || 1925}
+                    defaultMax={_max.year || new Date().getFullYear()}
+                    handleChange={handleChange}
+                    searchParams={searchParams}
+                />
                 {/*			<RangeFilter
-					label="Year"
-					minName="minYear"
-					maxName="maxYear"
-					defaultMin={_min.year || 1925}
-					defaultMax={_max.year || new Date().getFullYear()}
-					handleChange={handleChange}
-					searchParams={searchParams}
-				/>
-				<RangeFilter
 					label="Price"
 					minName="minPrice"
 					maxName="maxPrice"
